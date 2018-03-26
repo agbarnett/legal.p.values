@@ -1,0 +1,182 @@
+---
+title: "Use of statistical significance and p-values from the United States Court of Appeals"
+author: "Adrian Barnett"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE, error=FALSE, comment='', dpi=400)
+options(width=1000) # Wide pages
+library(pander)
+library(doBy)
+library(R2WinBUGS)
+library(tables)
+library(diagram)
+## a) get the meta-data
+meta = read.csv('Westlaw - List of 298 results for advanced (p-value or p value or statistically.csv', header=T, stringsAsFactors = F)
+meta = subset(meta, select=c('Title','Document.URL','Court.Line','Citation','Filed.Date'))
+meta = meta[meta$Title != '',] # remove one missing observation at end
+# get the randomly selected cases
+selected = read.table('selected.txt', skip=3, stringsAsFactors = F, sep='\t')
+included = NULL
+for (k in 1:105){
+  s = strsplit(selected$V1[k], split=' ')[[1]]
+  if(s[2] %in% c('xx','xx ',' xx')){
+    num = as.numeric(s[1])
+    included = c(included, num)
+  }
+}
+meta = meta[included, ]
+# make date
+meta$Filed.Date = as.Date(meta$Filed.Date, format('%b %d, %Y'))
+meta$case = as.numeric(rownames(meta)) # case number
+rownames(data) = NULL
+save(meta, file='meta.RData')
+
+## b) get my comments data
+load('Comments.RData') # from extract.pdf.R
+```
+
+### Flow chart of included cases
+
+```{r flow, fig.width=4.5, fig.height=4.5}
+names = c('Found by\nsearch (n=298)','Randomly\nselected (n=98)','No inter-\npretations (n=5)','Cases\nanalysed (n=93)')
+# (x,y) coordintes for boxes
+pos = matrix(data=c(
+  0.25,0.9,
+  0.25,0.5,
+  0.75,0.3,
+  0.25,0.1), ncol=2, byrow=T)
+# set up matrix
+M <- matrix(nrow = length(names), ncol = length(names), byrow = TRUE, data = 0)
+# make joints between boxes and add arrow labels:
+M[2,1] = "' '"
+M[4,2] = "' '"
+M[3,2] = "' '"
+# output to screen
+par(mar = c(1, 1, 1, 1)/10)
+plotmat(M, pos = pos, name = names, lwd = 1, shadow.size=0.00, curve=0,
+                   box.lwd = 2, cex.txt = 1, box.size = 0.18,
+                   box.type = "square", box.prop = 0.48)
+
+# output to tiff
+tiff('Flow.diagram.tif', width=4.5, height=4.5, units='in', res=300, compression = 'lzw')
+par(mar = c(1, 1, 1, 1)/10)
+plotmat(M, pos = pos, name = names, lwd = 1, shadow.size=0.00, curve=0,
+                   box.lwd = 2, cex.txt = 1, box.size = 0.18,
+                   box.type = "square", box.prop = 0.48)
+invisible(dev.off())
+```
+
+A sample size if 98 cases gives a 10% margin of error using a 95% confidence interval to estimate any true prevalence of correct interpretations. This sample size calculation assumes just one interpretation per case.
+
+### Summary statistics on case dates
+
+These statistics use the filed dates. The search for cases was restricted to 2007 onwards. The search was conducted in September 2017.
+
+```{r dates}
+s = summary(meta$Filed.Date)
+pander(s, style='simple')
+```
+
+### Number of interpretations per case. Frequency table and summary stats.
+
+```{r per.case}
+n.interpretations = nrow(data)
+n.cases = nrow(meta) # from meta data, so include zeros
+av = n.interpretations / n.cases
+# frequency table
+tab = data.frame(table(data$case))
+tab$Freq = as.character(tab$Freq)
+zeros = data.frame(Var1=1:5, Freq=rep(0,5)) # zeros
+tab = rbind(tab, zeros)
+tab$Freq = as.numeric(tab$Freq)
+tab = tabular(Heading('Number')*factor(Freq) + 1 ~ (n=1) + Percent('col')*Format(digits=0), data=tab)
+pander(tab, style='simple')
+```
+
+The largest number of interpretations in a case was 11.
+
+There were `r n.interpretations` interpretations from `r n.cases` cases an average of `r round(av*10)/10` interpretations per case.
+
+From now we only use the 93 cases with at least one interpretation.
+
+### Frequency table of interpretations
+
+We categorised any incorrect statements according to the twelve common misconceptions in Goodman (2008). We added an extra category of 'other' (number 99) for interpretations that were incorrect but did not fit any of the twelve categories.
+
+```{r freq.table}
+# make variable
+data$type[is.na(data$type)]='' # replace missing with nothing
+data$var = paste(data$answer, data$type, sep=' ')
+levels = c('Correct ', paste('Incorrect ', c(1:12,99), sep=''))
+data$var = factor(data$var, levels=levels)
+tab = tabular(Heading('Interpretation')*var+ 1 ~ (n=1) + Percent('col')*Format(digits=1), data=data)
+pander(tab, style='simple')
+```
+
+### Bayesian logistic regression results
+
+We used a logistic regression model to estimate the probability that interpretations were correct together with a 95% credible interval. To control for repeated interpretations from the same case we used a random intercept for each case. This was fitted as a normal distribution (on the logit scale) with zero mean and precision, tau. See the end of this document for the WinBUGS code. The model was fitted in WinBUGS version 1.4.3 (Lunn et al 2000). The results are plotted using R version 3.4.3.
+
+#### Plot of MCMC estimates
+
+The plots below are for the intercept (alpha) and the precision of the random effect variance (tau.case).
+
+```{r bayes.chain}
+load('Bugs.results.RData')
+print(chain.plot)
+```
+
+The chains used a burn-in and sample of `r MCMC` thinned by `r thin` and we used two chains with the same starting values.
+The chains for both parameters show good mixing and convergence. 
+
+#### Distribution plots of MCMC estimates
+
+The distribution plots use 10,000 estimates by combining the two chains.
+
+```{r bayes.distribution}
+print(dist.plot)
+```
+
+There is a slight negative skew in the intercept (alpha) and slight positive skew in the precision (tau.case). Neither are a cause for concern.
+
+#### Summary statistics
+
+The table below shows the mean estimate and 95% credible interval for the intercept (alpha), precision of the random effect (tau.case) and probability of a correct interpretation (pr).
+
+```{r bayes.summary}
+index = grep('alpha|pr|tau', row.names(bugs.summary))
+bugs.summary  =bugs.summary[index,]
+pander(bugs.summary, style='simple')
+```
+
+The mean probability of a correct interpretation is `r round(pr[1]*100)/100` with a 95% credible interval from `r round(pr[2]*100)/100` to `r round(pr[3]*100)/100`.
+
+## References
+
+* Goodman S. "A Dirty Dozen: Twelve P-Value Misconceptions" *Semin Hematol* 2008; **45**:135-140.
+
+*  Lunn, D.J., Thomas, A., Best, N., and Spiegelhalter, D. "WinBUGS — a Bayesian modelling a Bayesian modelling framework: concepts, structure, and extensibility" *Statistics and Computing* 2000; **10**:325–337.
+
+## WinBUGS code for logistic model
+
+```
+model{
+    for (i in 1:N){
+       answer[i] ~ dbern(p[i])
+      logit(p[i]) <- alpha + beta.c[case[i]]
+    }
+    alpha ~ dnorm(0, 0.001)
+    for (k in 1:M){ # random effect for case
+      beta[k] ~ dnorm(0, tau.case)
+      beta.c[k] <- beta[k] - mu.beta
+    }
+    mu.beta <- mean(beta[1:M])
+    tau.case ~ dgamma(1, 1)
+# probability
+    logit(pr) <- alpha 
+}
+```
