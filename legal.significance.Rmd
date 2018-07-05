@@ -1,7 +1,7 @@
 ---
 title: "Use of statistical significance and p-values from the United States Court of Appeals"
 author: "Adrian Barnett"
-date: "`r format(Sys.time(), '%d %B %Y')`"
+date: "7 February 2018"
 output:
   word_document
 ---
@@ -10,32 +10,82 @@ output:
 knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE, error=FALSE, comment='', dpi=400)
 options(width=1000) # Wide pages
 library(pander)
+panderOptions('table.split.table', Inf)
 library(doBy)
 library(R2WinBUGS)
 library(tables)
 library(diagram)
+library(stringr)
 ## a) get the meta-data
-meta = read.csv('Westlaw - List of 298 results for advanced (p-value or p value or statistically.csv', header=T, stringsAsFactors = F)
-meta = subset(meta, select=c('Title','Document.URL','Court.Line','Citation','Filed.Date'))
-meta = meta[meta$Title != '',] # remove one missing observation at end
+meta = read.table('meta.case.data.txt', sep='\t', header=T, stringsAsFactors = F, quote = "", comment.char = '')
 # get the randomly selected cases
 selected = read.table('selected.txt', skip=3, stringsAsFactors = F, sep='\t')
 included = NULL
 for (k in 1:105){
   s = strsplit(selected$V1[k], split=' ')[[1]]
-  if(s[2] %in% c('xx','xx ',' xx')){
+  if(s[2] %in% c('xx','xx ',' xx')){ # removing my notes in text file
     num = as.numeric(s[1])
     included = c(included, num)
   }
 }
+## add case information to case meta data
+# circuit
+meta$court = NA
+meta$court[grep('First', meta$Court.Line)] = 1
+meta$court[grep('Second', meta$Court.Line)] = 2
+meta$court[grep('Third', meta$Court.Line)] = 3
+meta$court[grep('Fourth', meta$Court.Line)] = 4
+meta$court[grep('Fifth', meta$Court.Line)] = 5
+meta$court[grep('Sixth', meta$Court.Line)] = 6
+meta$court[grep('Seventh', meta$Court.Line)] = 7
+meta$court[grep('Eighth', meta$Court.Line)] = 8
+meta$court[grep('Ninth', meta$Court.Line)] = 9
+meta$court[grep('Tenth', meta$Court.Line)] = 10
+meta$court[grep('Eleventh', meta$Court.Line)] = 11
+meta$court[grep('Columbia', meta$Court.Line)] = 12 # District of Columbia
+meta$court[grep('Federal', meta$Court.Line)] = 13 # 
+labels = c('First','Second','Third','Fourth','Fifth','Sixth','Seventh','Eighth','Ninth','Tenth','Eleventh','District of Columbia','Federal')
+meta$court = factor(meta$court, levels=1:13, labels=labels)
+## case type
+# cut summary string
+breaks = str_locate(string=meta$Summary, pattern=' - ')[,1]
+meta$brief = str_sub(meta$Summary, 1, breaks-1)  
+# fill in missing
+meta$brief[c(19,40,72,89,113,122,123,129,183,209,246,250)] = 'LABOR AND EMPLOYMENT' 
+meta$brief[c(84,121,150,160,163)] = 'SECURITIES REGULATION'
+meta$brief[c(131,237,277)] = 'CRIMINAL JUSTICE'
+meta$brief[c(142)] = 'PATENTS'
+meta$brief[c(272)] = 'GOVERNMENT'
+meta$brief[c(147,196,292)] = 'CIVIL RIGHTS'
+# second case descriptor
+full.stops = str_locate(string=meta$Summary, pattern='\\.')[,1]
+meta$type = str_sub(meta$Summary, breaks+3, full.stops-1)  
+# fill in missing
+meta$type[c(19,72,89,113,122,123,129,183,209,246,250)] = 'Discrimination'
+meta$type[c(40)] ='Occupational Safety'
+meta$type[c(121,163)] = 'Fraud'
+meta$type[c(131,277)] = 'Habeas Corpus'
+meta$type[c(142)] = 'Drugs'
+meta$type[c(84,150,160)] = 'Class Actions'
+meta$type[c(237)] = 'Sentencing'
+meta$type[c(272)] = 'Elections'
+meta$type[c(147,196,292)] = 'Equal protection'
+## make two versions of meta data (useful for later tables), one with an included variable ...
+meta.all = meta
+meta.all$included = 'All'
+# ... one of just the 98 randomly sampled
 meta = meta[included, ]
-# make date
+metax = meta # duplicate
+metax$included = 'Sampled'
+meta.all = rbind(meta.all, metax)
+remove(metax) # tidy up
+# make case date
 meta$Filed.Date = as.Date(meta$Filed.Date, format('%b %d, %Y'))
 meta$case = as.numeric(rownames(meta)) # case number
 rownames(data) = NULL
-save(meta, file='meta.RData')
+save(meta, file='meta.RData') # save an RData version
 
-## b) get my comments data
+## b) get my comments on the cases
 load('Comments.RData') # from extract.pdf.R
 ```
 
@@ -72,6 +122,79 @@ invisible(dev.off())
 
 A sample size if 98 cases gives a 10% margin of error using a 95% confidence interval to estimate any true prevalence of correct interpretations. This sample size calculation assumes just one interpretation per case.
 
+### What court circuits were included? All United States Court of Appeals
+
+```{r table.courts}
+tab = tabular(Heading('Circuit')*court + 1 ~ Heading('')*factor(included)*((n=1) + Percent('col')*Format(digits=0)), data=meta.all)
+pander(tab, emphasize.rownames = F)
+## for latex (with percents in brackets)
+tab = with(meta.all, table(court, included))
+percents = round(prop.table(tab,2)*100)
+tab = cbind(tab[,1],percents[,1],tab[,2],percents[,2]) # arrange columns
+outfile = file('latex.tables.txt', 'w')
+cat('Type&n (%)&n (%) \\\\ \n', file=outfile) # header
+for (k in 1:nrow(tab)){
+  cat(rownames(tab)[k], '&', tab[k,1] ,' (', tab[k,2], ')&', tab[k,3], ' (', tab[k,4], ')\\\\ \n', sep='', file=outfile)
+}
+close(outfile)
+```
+
+### Types of court cases
+
+Just the top ten most frequent, with a row of "Other". The first two columns are number and percents in the 298 cases returned by the search. The second two columns are number and percents in the 98 randomly selected cases.
+
+```{r table.types}
+# order by frequency 
+tab = with(meta.all, table(brief, included))
+tab = tab[order(-tab[,1]),]
+top.ten = tab[1:10, ]
+others = tab[11:nrow(tab),]
+tab = rbind(top.ten, colSums(others))
+row.names(tab)[11]='Other'
+row.names(tab) = tolower(row.names(tab))
+percents = round(prop.table(tab,2)*100)
+tab = cbind(tab[,1],percents[,1],tab[,2],percents[,2]) # arrange columns
+colnames(tab) = c('n','%','n','%')
+pander(tab, emphasize.rownames = F)
+# for latex
+outfile = file('latex.tables.txt', 'w')
+cat('Type&n (%)&n (%) \\\\ \n', file=outfile) # header
+for (k in 1:nrow(tab)){
+  cat(rownames(tab)[k], '&', tab[k,1] ,' (', tab[k,2], ')&', tab[k,3], ' (', tab[k,4], ')\\\\ \n', sep='', file=outfile)
+}
+close(outfile)
+# store top ten for use below
+top.ten.brief = row.names(top.ten)
+```
+
+### Types of court cases (second type)
+
+Just the top ten most frequent, with a row of "Other". The first two columns are number and percents in the 298 cases returned by the search. The second two columns are number and percents in the 98 randomly selected cases.
+
+```{r table.types.2}
+# order by frequency 
+tab = with(meta.all, table(type, included))
+tab = tab[order(-tab[,1]),]
+top.ten = tab[1:10, ]
+others = tab[11:nrow(tab),]
+tab = rbind(top.ten, colSums(others))
+row.names(tab)[11]='Other'
+row.names(tab) = tolower(row.names(tab))
+percents = round(prop.table(tab,2)*100)
+tab = cbind(tab[,1],percents[,1],tab[,2],percents[,2]) # arrange columns
+colnames(tab) = c('n','%','n','%')
+pander(tab, emphasize.rownames = F)
+# store top ten for use below
+top.ten.type = row.names(top.ten)
+# for latex
+outfile = file('latex.tables.txt', 'a') # append?
+cat('\nType&n (%)&n (%) \\\\ \n', file=outfile) # header
+for (k in 1:nrow(tab)){
+  cat(rownames(tab)[k], '&', tab[k,1] ,' (', tab[k,2], ')&', tab[k,3], ' (', tab[k,4], ')\\\\ \n', sep='', file=outfile)
+}
+close(outfile)
+```
+
 ### Summary statistics on case dates
 
 These statistics use the filed dates. The search for cases was restricted to 2007 onwards. The search was conducted in September 2017.
@@ -90,11 +213,11 @@ av = n.interpretations / n.cases
 # frequency table
 tab = data.frame(table(data$case))
 tab$Freq = as.character(tab$Freq)
-zeros = data.frame(Var1=1:5, Freq=rep(0,5)) # zeros
+zeros = data.frame(Var1=1:5, Freq=rep(0,5)) # five cases with no interpretations
 tab = rbind(tab, zeros)
 tab$Freq = as.numeric(tab$Freq)
 tab = tabular(Heading('Number')*factor(Freq) + 1 ~ (n=1) + Percent('col')*Format(digits=0), data=tab)
-pander(tab, style='simple')
+pander(tab, style='simple', emphasize.rownames=F)
 ```
 
 The largest number of interpretations in a case was 11.
@@ -114,7 +237,7 @@ data$var = paste(data$answer, data$type, sep=' ')
 levels = c('Correct ', paste('Incorrect ', c(1:12,99), sep=''))
 data$var = factor(data$var, levels=levels)
 tab = tabular(Heading('Interpretation')*var+ 1 ~ (n=1) + Percent('col')*Format(digits=1), data=data)
-pander(tab, style='simple')
+pander(tab, style='simple', emphasize.rownames=F)
 ```
 
 ### Bayesian logistic regression results
@@ -126,7 +249,7 @@ We used a logistic regression model to estimate the probability that interpretat
 The plots below are for the intercept (alpha) and the precision of the random effect variance (tau.case).
 
 ```{r bayes.chain}
-load('Bugs.results.RData')
+load('Bugs.results.RData') # from bugs.model.R
 print(chain.plot)
 ```
 
@@ -150,10 +273,52 @@ The table below shows the mean estimate and 95% credible interval for the interc
 ```{r bayes.summary}
 index = grep('alpha|pr|tau', row.names(bugs.summary))
 bugs.summary  =bugs.summary[index,]
-pander(bugs.summary, style='simple')
+pander(bugs.summary, style='simple', emphasize.rownames=F)
 ```
 
 The mean probability of a correct interpretation is `r round(pr[1]*100)/100` with a 95% credible interval from `r round(pr[2]*100)/100` to `r round(pr[3]*100)/100`.
+
+### Correct interpretations by court circuit
+
+```{r correct.circuit}
+merged = merge(subset(data, select=-type), 
+               subset(meta, select=c('case','type','brief','court')), by='case', all.x=T)
+tab = tabular(Heading('Circuit')*court + 1 ~ (Heading('Correct')*factor(answer) +1)*((n=1) + Percent('row')*Format(digits=0)), data=merged)
+pander(tab, emphasize.rownames = F)
+#latex(tab, file = 'circuit.correct.tex')
+```
+
+
+### Correct interpretations by case type (top ten)
+ 
+
+```{r correct.type}
+# top ten
+merged$type.other = merged$type
+merged$type.other[merged$type.other%in%top.ten.type ==F] = 'Other'
+# with at least 10 interpretations
+#at.least.10 =  names(which(table(merged$type)>=10))
+#merged$type.other[merged$type.other%in%at.least.10 ==F] = 'Other'
+# table
+tab = tabular(Heading('Type')*factor(type.other) + 1 ~ (Heading('Correct')*factor(answer) +1)*((n=1) + Percent('row')*Format(digits=0)), data=merged)
+pander(tab, emphasize.rownames = F)
+#latex(tab, file = 'type.correct.tex')
+```
+
+### Correct interpretations by broad legal area (top ten)
+
+```{r correct.type2}
+# top ten
+merged$brief.other = merged$brief
+merged$brief.other[merged$brief.other%in%top.ten.brief ==F] = 'Other'
+# with at least 10 interpretations
+#at.least.10 =  names(which(table(merged$brief)>=10))
+#merged$brief.other[merged$brief.other%in%at.least.10 ==F] = 'Other'
+# table
+tab = tabular(Heading('Brief')*factor(brief.other) + 1 ~ (Heading('Correct')*factor(answer) +1)*((n=1) + Percent('row')*Format(digits=0)), data=merged)
+pander(tab, emphasize.rownames = F)
+#latex(tab, file = 'type2.correct.tex')
+```
 
 ## References
 
@@ -161,7 +326,7 @@ The mean probability of a correct interpretation is `r round(pr[1]*100)/100` wit
 
 *  Lunn, D.J., Thomas, A., Best, N., and Spiegelhalter, D. "WinBUGS — a Bayesian modelling a Bayesian modelling framework: concepts, structure, and extensibility" *Statistics and Computing* 2000; **10**:325–337.
 
-## WinBUGS code for logistic model
+## WinBUGS code for Bayesian logistic model
 
 ```
 model{
