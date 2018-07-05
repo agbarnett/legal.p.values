@@ -1,0 +1,155 @@
+case	answer	type	text
+1	Correct	NA	Correct. Alleluia!
+1	Correct	NA	Correct. Albeit an arbitrary threshold.
+1	Correct	NA	Correct. Although it would be good to see a discussion of the size of the difference too.
+1	Correct	NA	Correct. Not assessed previous two in this paragraph. All correct, however again there's no mention of the size of the difference yet on a useful scale. There is a mention below about the differences being "large".
+1	Incorrect	3	 Is basically a count of statistical significance and says nothing about the size of the difference
+1	Incorrect	2	 Strange idea that years would need to be combined in order to reach the threshold of statistical significance
+1	Correct	NA	Correct. A very good discussion in this paragraph on the difference between statistical and practical significance. Not assessed all the mentions in this paragraph as it is all the same point.
+1	Correct	NA	Correct. Related to above but uses another nice example and is extending the point.
+1	Correct	NA	Correct. Further evidence of good understanding of the difference between the p-value and the magnitude of the difference.
+1	Incorrect	12	 Heavy reliance on a simple threshold to make decisions
+1	Incorrect	1	 Mixed up p-value with probability of chance
+7	Correct	NA	Correct. Given in context with the size of the difference, albeit a size described in words rather than numbers.
+7	Incorrect	2	 Relying on statistical significance rather than also looking at the size of the difference
+7	Correct	NA	Correct. Simple, but also facile, interpretation.
+12	Incorrect	10	 No accounting for prior probability
+12	Incorrect	1	 
+12	Correct	NA	Correct. Basic description of multiple testing.
+19	Incorrect	1	 The p-value is not the probability of chance producing the data
+19	Incorrect	3	 Total reliance on statistical significance rather than size
+19	Incorrect	2	 Heavy reliance on lack of statistical significance to disprove discrimination
+19	Correct	NA	Correct. (includes two mentions just above). A good interpretation of not relying on the arbitrary 0.05 threshold.
+19	Correct	NA	Correct. Fair warning about the impact of sample size on statistical significance.
+23	Incorrect	3	 No idea of the size of the difference
+23	Incorrect	3	 Focus on significance
+25	Correct	NA	Correct. Talking the four interpretations in this paragraph together it is a generally good interpretation of the limits of statistical significance. Also note that there is mention of the size of the difference.
+25	Correct	NA	Correct. Similar to before, a reasonable warning about reliance on a simple argument of statistical significance. 
+25	Correct	NA	Correct. Not just relying on statistical significance but asking reasonable questions about how the analysis was constructed.
+28	Correct	NA	Correct. Interprets statistical significance as part of the evidence, although odd to talk about standard deviation, presumably they mean a t- or Z-statistic.
+28	Incorrect	1	 From ASA statement "P-values do not measure the probability that [
+28	Incorrect	3	 Statistical significance is not a necessary condition for reliability
+28	Incorrect	1	 Incorrect wording
+28	Correct	NA	Correct. Much better wording from the expert witness.
+30	Correct	NA	Correct. Cherry picking could easily lead to p-values that are falsely small.
+30	Correct	NA	Correct. Although the use of corrections appears to strongly lean towards a "bright-line" approach to significance or not.
+30	Correct	NA	Correct. Although as per previous statement, this is leaning towards the flawed "bright-line" approach.
+30	Incorrect	2	 No idea of the size of the difference
+31	Incorrect	2	 Although there's some qualification, the wording is still treating significance as a bright line
+31	Incorrect	2	 This approach ignores potentially vital information
+31	Incorrect	2	 Again ignoring any size information
+36	Incorrect	2	 Assessed these three interpretations jointly
+37	Incorrect	2	 Although the above discussion appears useful and considers the size of the issue, this wording still puts "statistical significance" on a pedestal on which the whole usefulness of the evidence could hinge
+39	Correct	NA	Correct. Assessed these four mentions in the one paragraph jointly. Overall they are a correct interpretation of the limitations of statistical significance.
+40	Incorrect	2	 Useful inference can still be drawn without the need for statistical significance
+50	Incorrect	6	 Completely wrong in terms of probability
+50	Incorrect	3	 No idea of size
+51	Incorrect	2	 Although this is a general discussion of presenting results it fails to point out that the significance (or otherwise) may not be that important and is treating significance as binary evidence of validity
+51	Incorrect	3	 No idea of the size of the difference
+54	Incorrect	2	 No mention of the size of any difference
+57	Incorrect	2	 A doubling of risk could be a huge increase and it is baffling that this also has to be statistically significant
+57	Incorrect	2	 Same mistake as before but applied to a different study so marked as another error
+59	Incorrect	2	 No idea of size; using statistical significance as the only criteria
+59	Incorrect	2	 Relying on statistical significance in place of the size of any difference
+59	Incorrect	3	 Needs to be discussed in context of the size of any difference
+60	Incorrect	3	 No idea of the size of the risk here
+60	Incorrect	3	 No idea of the size of the risk
+60	Incorrect	12	 Pinning the whole argument on statistical significance (or lack of)
+65	Incorrect	3	 No idea of the size of the difference
+65	Incorrect	3	 Again ignoring size
+65	Incorrect	3	 Ignores size of correlation as well as being a very odd sentence
+66	Incorrect	1	 Fine on arbitrary nature of threshold, but incorrect interpretation of the p-value
+67	Incorrect	2	 No idea of the size of the difference
+67	Incorrect	3	 No idea of the size of the correlation
+70	Incorrect	2	 A non-significant finding could still mean there was a large difference between the groups
+71	Incorrect	2	 No mention of size, perhaps could have used confidence intervals or even just the mean numbers
+79	Incorrect	2	 Implies that only a sample that could deliver statistical significance would be worth looking at
+79	Incorrect	99	 Very odd
+83	Incorrect	2	 Ignores the size of the difference
+85	Incorrect	2	 No idea of size, also completely wrong in saying standard deviation
+86	Correct	NA	Correct. A statistically significant p-value does not say much helpful about an individual case in this example.
+86	Incorrect	1	 P-values do not tell us the probability that the data were produced by chance alone
+90	Incorrect	2	 No mention of the size of the change
+91	Incorrect	3	 No idea of the size of the difference
+92	Incorrect	2	 The language used here in the context of the previous paragraph takes a "sizeless" position and largely ignores the apparently clinically meaningful reduction in fractures
+92	Incorrect	99	 Implies that only studies with a statistically significant result are faultless
+92	Incorrect	2	 No mention of the size of the difference
+93	Incorrect	2	 No idea of the size of the difference
+93	Correct	NA	Correct. Given in context with actual differences in risk.
+93	Incorrect	3	 No idea of size
+93	Incorrect	2	 Gives the size of the difference but then ignores this data! Also no idea of the actual p-value, was it 0
+95	Incorrect	3	 No idea of the size of the difference
+95	Incorrect	2	 No idea of the size or power to show a difference
+101	Incorrect	2	 At least there is some mentioning of "relevant" but there's still no mention of the size of the difference
+105	Incorrect	2	 Very clear reliance on significance, and ignoring size of the difference in age shown
+105	Incorrect	2	 Although it's true that a sample size of two is very small, the lack of "significance" or otherwise should not be used as an excuse to write-off data
+106	Incorrect	3	 Text below relies solely on statistical significance and does not include any measure of size/strength
+106	Correct	NA	Correct. A correct interpretation of the perils of over-looking a potentially important difference, although the idea that it implies "absent confounding effects" is wrong.
+107	Incorrect	2	 Mostly because of the interpretation given in the next column using the wording "statistically insignificant" and how that was not erroneous
+110	Correct	NA	Correct. Critique of relying solely on statistical significance
+117	Correct	NA	Correct. Points out flaws of using the "statistically significant" approach.
+117	Correct	NA	Correct. As above.
+122	Correct	NA	Correct. Not clear cut, but given the text below I have marked as correct as there is a general discussion about how this is only part of the evidence. Although some of the discussion of sample size could be better worded.
+126	Incorrect	2	 Could still be an important difference
+126	Correct	NA	Correct. States that statistical significance is not all important and the size of the difference is key.
+131	Incorrect	3	 Relies on "significance" with some back-up from the R2
+131	Incorrect	3	 As above
+131	Incorrect	3	 No details given on the strength of the association and whether that is a good/acceptable value
+135	Correct	NA	Correct. Not perfect but given as correct given context in wider debate about clinical significance.
+136	Incorrect	2	 No mention of size, staking most of the decision on significance
+137	Correct	NA	Correct. Stating that evidence can still be important with "statistical significance"
+137	Incorrect	3	 No detail given on the size of the difference
+143	Incorrect	3	 No idea of the size of the decrease
+143	Incorrect	3	 Even though it says the decrease is "mild" it still promotes statistical significance as something that would prove an effect
+145	Incorrect	3	 No mention of the size of the reduction for this comparison
+148	Correct	NA	Correct. Presented in context with figures that clearly show the size of the change. Actual p-value would be preferable. I assume that they used the 0.05 threshold.
+148	Incorrect	3	 No idea of the size of the difference or how this might be judged
+155	Correct	NA	Correct. Simple description of why the study was stopped.
+155	Incorrect	2	 No indication of the size of the difference
+159	Correct	NA	Correct. Valid criticism of relying on statistical significance.
+159	Correct	NA	Correct. Although it's odd that it's the whole "study".
+160	Incorrect	2	 No idea of power of the study or the size of the risk difference
+161	Incorrect	3	 Although there is mention of the average difference in ages above, the interpretation here is a strict bright-line argument
+162	Incorrect	2	 No idea of the size of the difference
+162	Incorrect	2	 The differences might still be important
+164	Correct	NA	Correct. Marked as correct because of previous use of "strong". Could be generous.
+164	Incorrect	2	 No idea of the size of the difference or the power of the study
+170	Correct	NA	Correct. Not perfect as it potentially still implies that a statistically significant correlation where variables were adjusted for would be sufficient without any reference to the size of the association. Marked as correct reading it as a general warning of relying on statistical significance.
+173	Incorrect	2	 No idea of the size of the difference
+177	Incorrect	99	 This is an odd jumble of sample size and accuracy
+180	Incorrect	3	 No idea of the size of the difference
+182	Correct	NA	Correct. A general warning that statistical significance (or lack of) is just one factor and other evidence needs to be examined.
+183	Incorrect	2	 Could still be an important difference
+184	Incorrect	2	 Could still be an important difference
+187	Incorrect	3	 No idea of the size of the difference
+188	Correct	NA	Correct. Not perfect, but marked as correct because the overall discussion is about how statistical significance is not the "be all and end all".
+189	Incorrect	99	 General misunderstanding of statistical significance here
+191	Incorrect	2	 Classic absence of evidence is not evidence of absence
+192	Incorrect	2	 Too much weight given to statistical significance or not
+194	Incorrect	3	 No indication of the size of the difference
+197	Incorrect	2	 No mention of size
+199	Correct	NA	Correct. Discussed as not being the absolute arbitor.
+209	Incorrect	2	 Only wants to take the finding seriously if it is statistically significant
+211	Correct	NA	Correct. Not perfect, but wording (which is cautious) is okay as it basically says there may be an association of interest. Misuse of "correlation" which should be "association". No mention of the size of the association.
+214	Incorrect	2	 No idea of the size of the risk difference
+215	Incorrect	2	 No idea of the size of the difference
+221	Incorrect	2	 Although this interpretation includes size it still relies on the idea of statistical significance rather than the change in employment status
+232	Incorrect	2	 No idea of the size of the difference
+235	Incorrect	3	 Says nothing about the size of the decrease
+236	Incorrect	3	 No idea of the size of the difference
+237	Incorrect	3	 No idea of the size of the difference
+238	Incorrect	3	 No information on size of change in risk
+241	Correct	NA	Correct. Given in context with the important factor of size.
+255	Correct	NA	Correct. Pointing out problem of relying solely on statistical significance.
+257	Incorrect	2	 No idea of size
+258	Correct	NA	Correct. Could be better worded as saying "unlikely due to chance" but overall is wisely cautious against the overuse of the p-value. Does not incorrectly say that p-value is the probability that findings were due to chance.
+259	Incorrect	3	 No idea of the size of the difference
+260	Incorrect	2	 No mention of power of the test
+261	Incorrect	12	 Implies that whole decision should rest on significance or not
+267	Incorrect	3	 Nothing given on the size of the difference
+274	Incorrect	3	 No idea of the size of the difference
+276	Incorrect	2	 No idea of the size of the difference (or lack of)
+277	Correct	NA	Correct. No idea what test was used, but the context is the use of a "significant" statistical test to flag a potential problem that was followed up by further investigation.
+281	Incorrect	2	 Could still be an important difference; no mention of power
+284	Incorrect	2	 Although there's some discussion of considering the results regardless of significance, it still is being used as an important criteria
+286	Incorrect	2	 There could still be an important difference and no idea of the size of the difference is given here
