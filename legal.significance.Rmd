@@ -17,9 +17,9 @@ library(tables)
 library(diagram)
 library(stringr)
 ## a) get the meta-data
-meta = read.table('meta.case.data.txt', sep='\t', header=T, stringsAsFactors = F, quote = "", comment.char = '')
+meta = read.table('meta.case.data.txt', sep='\t', header=TRUE, stringsAsFactors = FALSE, quote = "", comment.char = '')
 # get the randomly selected cases
-selected = read.table('selected.txt', skip=3, stringsAsFactors = F, sep='\t')
+selected = read.table('selected.txt', skip=3, stringsAsFactors = FALSE, sep='\t')
 included = NULL
 for (k in 1:105){
   s = strsplit(selected$V1[k], split=' ')[[1]]
@@ -98,7 +98,7 @@ pos = matrix(data=c(
   0.25,0.9,
   0.25,0.5,
   0.75,0.3,
-  0.25,0.1), ncol=2, byrow=T)
+  0.25,0.1), ncol=2, byrow=TRUE)
 # set up matrix
 M <- matrix(nrow = length(names), ncol = length(names), byrow = TRUE, data = 0)
 # make joints between boxes and add arrow labels:
@@ -126,7 +126,7 @@ A sample size if 98 cases gives a 10% margin of error using a 95% confidence int
 
 ```{r table.courts}
 tab = tabular(Heading('Circuit')*court + 1 ~ Heading('')*factor(included)*((n=1) + Percent('col')*Format(digits=0)), data=meta.all)
-pander(tab, emphasize.rownames = F)
+pander(tab, emphasize.rownames = FALSE)
 ## for latex (with percents in brackets)
 tab = with(meta.all, table(court, included))
 percents = round(prop.table(tab,2)*100)
@@ -155,7 +155,7 @@ row.names(tab) = tolower(row.names(tab))
 percents = round(prop.table(tab,2)*100)
 tab = cbind(tab[,1],percents[,1],tab[,2],percents[,2]) # arrange columns
 colnames(tab) = c('n','%','n','%')
-pander(tab, emphasize.rownames = F)
+pander(tab, emphasize.rownames = FALSE)
 # for latex
 outfile = file('latex.tables.txt', 'w')
 cat('Type&n (%)&n (%) \\\\ \n', file=outfile) # header
@@ -183,7 +183,7 @@ row.names(tab) = tolower(row.names(tab))
 percents = round(prop.table(tab,2)*100)
 tab = cbind(tab[,1],percents[,1],tab[,2],percents[,2]) # arrange columns
 colnames(tab) = c('n','%','n','%')
-pander(tab, emphasize.rownames = F)
+pander(tab, emphasize.rownames = FALSE)
 # store top ten for use below
 top.ten.type = row.names(top.ten)
 # for latex
@@ -217,7 +217,7 @@ zeros = data.frame(Var1=1:5, Freq=rep(0,5)) # five cases with no interpretations
 tab = rbind(tab, zeros)
 tab$Freq = as.numeric(tab$Freq)
 tab = tabular(Heading('Number')*factor(Freq) + 1 ~ (n=1) + Percent('col')*Format(digits=0), data=tab)
-pander(tab, style='simple', emphasize.rownames=F)
+pander(tab, style='simple', emphasize.rownames=FALSE)
 ```
 
 The largest number of interpretations in a case was 11.
@@ -237,7 +237,7 @@ data$var = paste(data$answer, data$type, sep=' ')
 levels = c('Correct ', paste('Incorrect ', c(1:12,99), sep=''))
 data$var = factor(data$var, levels=levels)
 tab = tabular(Heading('Interpretation')*var+ 1 ~ (n=1) + Percent('col')*Format(digits=1), data=data)
-pander(tab, style='simple', emphasize.rownames=F)
+pander(tab, style='simple', emphasize.rownames=FALSE)
 ```
 
 ### Bayesian logistic regression results
@@ -273,7 +273,7 @@ The table below shows the mean estimate and 95% credible interval for the interc
 ```{r bayes.summary}
 index = grep('alpha|pr|tau', row.names(bugs.summary))
 bugs.summary  =bugs.summary[index,]
-pander(bugs.summary, style='simple', emphasize.rownames=F)
+pander(bugs.summary, style='simple', emphasize.rownames=FALSE)
 ```
 
 The mean probability of a correct interpretation is `r round(pr[1]*100)/100` with a 95% credible interval from `r round(pr[2]*100)/100` to `r round(pr[3]*100)/100`.
@@ -282,9 +282,9 @@ The mean probability of a correct interpretation is `r round(pr[1]*100)/100` wit
 
 ```{r correct.circuit}
 merged = merge(subset(data, select=-type), 
-               subset(meta, select=c('case','type','brief','court')), by='case', all.x=T)
+               subset(meta, select=c('case','type','brief','court')), by='case', all.x=TRUE)
 tab = tabular(Heading('Circuit')*court + 1 ~ (Heading('Correct')*factor(answer) +1)*((n=1) + Percent('row')*Format(digits=0)), data=merged)
-pander(tab, emphasize.rownames = F)
+pander(tab, emphasize.rownames = FALSE)
 #latex(tab, file = 'circuit.correct.tex')
 ```
 
@@ -295,13 +295,13 @@ pander(tab, emphasize.rownames = F)
 ```{r correct.type}
 # top ten
 merged$type.other = merged$type
-merged$type.other[merged$type.other%in%top.ten.type ==F] = 'Other'
+merged$type.other[merged$type.other%in%top.ten.type ==FALSE] = 'Other'
 # with at least 10 interpretations
 #at.least.10 =  names(which(table(merged$type)>=10))
-#merged$type.other[merged$type.other%in%at.least.10 ==F] = 'Other'
+#merged$type.other[merged$type.other%in%at.least.10 ==FALSE] = 'Other'
 # table
 tab = tabular(Heading('Type')*factor(type.other) + 1 ~ (Heading('Correct')*factor(answer) +1)*((n=1) + Percent('row')*Format(digits=0)), data=merged)
-pander(tab, emphasize.rownames = F)
+pander(tab, emphasize.rownames = FALSE)
 #latex(tab, file = 'type.correct.tex')
 ```
 
@@ -310,13 +310,13 @@ pander(tab, emphasize.rownames = F)
 ```{r correct.type2}
 # top ten
 merged$brief.other = merged$brief
-merged$brief.other[merged$brief.other%in%top.ten.brief ==F] = 'Other'
+merged$brief.other[merged$brief.other%in%top.ten.brief ==FALSE] = 'Other'
 # with at least 10 interpretations
 #at.least.10 =  names(which(table(merged$brief)>=10))
-#merged$brief.other[merged$brief.other%in%at.least.10 ==F] = 'Other'
+#merged$brief.other[merged$brief.other%in%at.least.10 ==FALSE] = 'Other'
 # table
 tab = tabular(Heading('Brief')*factor(brief.other) + 1 ~ (Heading('Correct')*factor(answer) +1)*((n=1) + Percent('row')*Format(digits=0)), data=merged)
-pander(tab, emphasize.rownames = F)
+pander(tab, emphasize.rownames = FALSE)
 #latex(tab, file = 'type2.correct.tex')
 ```
 
